@@ -54,6 +54,7 @@ app.get('/sistem', function (req, res) {
 });
  
 // port must be set to 8080 because incoming http requests are routed from port 80 to port 8080
-app.listen(5000, function () {
-    console.log('Node app is running on port 8080');
+app.set('port', process.env.PORT || 8081);
+const server = app.listen(app.get('port'), () => {
+    console.log(`Bridge Monitoring API → PORT ${server.address().port}`);
 });
