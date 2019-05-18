@@ -52,6 +52,18 @@ app.get('/sistem', function (req, res) {
         return res.send({ data: results });
     });
 });
+app.get('/komponen', function (req, res) {
+    mc.query('SELECT komponen_id, komponen_name, sistem_name FROM komponen k, sistem s WHERE k.sistem_id=s.sistem_id', function (error, results,fields) {
+        if (error) throw error;
+        return res.send({ data: results });
+    });
+});
+app.get('/subkomponen', function (req, res) {
+    mc.query('SELECT subKomponen_id,komponen_name,subKomponen_name FROM subKomponen s,komponen k where s.komponen_id = k.komponen_id', function (error, results,fields) {
+        if (error) throw error;
+        return res.send({ data: results });
+    });
+});
  
 // port must be set to 8080 because incoming http requests are routed from port 80 to port 8080
 app.set('port', process.env.PORT || 8081);
