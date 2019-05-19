@@ -11,11 +11,11 @@ app.use(bodyParser.urlencoded({
 }));
 // connection configurations
 const mc = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    port: '5700',
-    password: 'root',
-    database: 'BridgeSurvey'
+    host: 'projectazuresql.mysql.database.azure.com',
+    user: 'admindb@projectazuresql',
+    port: '3306',
+    password: 'adminAzure_10',
+    database: 'bridgeSurvey'
 });
 
 morgan.token('id', function getId(req) {
