@@ -78,8 +78,8 @@ app.get('/subkomponen', function (req, res) {
     mc.query('SELECT subKomponen_id,komponen_name,subKomponen_name,sistem_name FROM subkomponen s,komponen k,sistem st  where s.komponen_id = k.komponen_id AND k.sistem_id=st.sistem_id', function (error, results, fields) {
         if (error) throw error;
         return res.send({
-            allSubKomponen : results
-        }); 
+            allSubKomponen: results
+        });
     });
 });
 
@@ -120,13 +120,12 @@ app.get('/bridge', function (req, res) {
 // POST METHOD
 app.post('/addanswer', function (req, res) {
 
-    let answerId = req.body.answer_id;
-    let bridgeName = req.body.bridge_name;
-    let bridgeloc = req.body.bridge_location;
-    let komponen = req.body.komponen_name;
-    let sistem = req.body.sistem_name;
-    let subkomponen = req.body.subkomponen_name;
-    let bhn = req.body.bahan;
+    let bridgeId = req.body.bridge_id;
+    let komponenId = req.body.komponen_id;
+    let sistemId = req.body.sistem_id;
+    let surveyorId= req.body.surveyor_id;
+    let subkomponenId = req.body.subkomponen_id;
+    let bahanId = req.body.bahan_id;
     let rusak = req.body.kerusakan;
     let interval = req.body.interval_kerusakan;
     let luas = req.body.luasan;
@@ -142,7 +141,7 @@ app.post('/addanswer', function (req, res) {
     let iks = req.body.IKS;
 
 
-    if (!name || !bridge_name || !bridgeloc || !komponen || !sistem || !subkomponen || !bhn || !rusak || !interval || !luas ||
+    if (!bridgeId  || !surveyorId || !komponenId || !subkomponenId || !sistemId  || !bahanId|| !rusak || !interval || !luas ||
         !luas2 || !pengurang || !koreksi || !nilai1 || !nilai2 || !bobotKomponen || !iksk || !ikus || !ikkj || !iks) {
         return res.status(400).send({
             error: true,
@@ -151,12 +150,11 @@ app.post('/addanswer', function (req, res) {
     }
 
     mc.query("INSERT INTO answer SET ? ", {
-        surveyor_name: name,
-        bridge_name: bridgeName,
-        bridge_location: bridgeloc,
-        komponen_name: komponen,
-        sistem_name: sistem,
-        bahan: bhn,
+        surveyor_id: surveyorId,
+        bridge_id: bridgeId,
+        komponen_id: komponenId,
+        sistem_id: sistemId,
+        bahan_id: bahanId,
         kerusakan: rusak,
         interval_kerusakan: interval,
         luasan: luas,
@@ -254,6 +252,71 @@ app.put('/edit/engineer', function (req, res) {
             error: false,
             data: results,
             message: 'surveyor has been updated successfully.'
+        });
+    });
+});
+app.put('/edit/bridge', function (req, res) {
+
+    let id = req.body.bridge_id;
+    let name = req.body.bridge_name;
+    let location = req.body.bridge_location;
+
+    if (!id || !name || !location) {
+        return res.status(400).send({
+            error: name,
+            work,
+            message: 'Please provide name, and location'
+        });
+    }
+
+    mc.query("UPDATE bridge  SET bridge_name = ?, bridge_location =? WHERE bridge_id = ?", [name, location, id], function (error, results, fields) {
+        if (error) throw error;
+        return res.send({
+            error: false,
+            data: results,
+            message: 'bridge has been updated successfully.'
+        });
+    });
+});
+
+app.put('/edit/answer', function (req, res) {
+    let answerId=req.body.answer_id;
+    let bridgeId = req.body.bridge_id;
+    let komponenId = req.body.komponen_id;
+    let sistemId = req.body.sistem_id;
+    let surveyorId= req.body.surveyor_id;
+    let subkomponenId = req.body.subkomponen_id;
+    let bahanId = req.body.bahan_id;
+    let rusak = req.body.kerusakan;
+    let interval = req.body.interval_kerusakan;
+    let luas = req.body.luasan;
+    let luas2 = req.body.luasan2;
+    let pengurang = req.body.nilai_pengurang;
+    let koreksi = req.body.faktor_koreksi;
+    let nilai1 = req.body.faktor_nilai1;
+    let nilai2 = req.body.faktor_nilai2;
+    let bobotKomponen = req.body.bobot_komponen;
+    let iksk = req.body.IKSK;
+    let ikus = req.body.IKUS;
+    let ikkj = req.body.IKKJ;
+    let iks = req.body.IKS;
+
+    if (!answerId || !bridgeId || !komponenId || !sistemId || !surveyorId || !subkomponenId || ! bahanId || !rusak || !interval || !luas
+        || !luas2 || !pengurang || ! koreksi || ! nilai1 || !nilai2 || ! bobotKomponen ||!iksk || ! ikus ||!ikkj ||!iks) {
+        return res.status(400).send({
+            error: name,
+            work,
+            message: 'Please provide answer!'
+        });
+    }
+
+    mc.query("UPDATE answer SET bridge_id   = ?, sistem_id=?, komponen_id=?, subKomponen_id=?, surveyor_id=?, bridge_id=?, bahan_id=?, kerusakan=?, interval_kerusakan=?,luasan=?, luasan2=?, nilai_pengurang=?,faktor_koreksi=?, faktor_nilai1=?,faktor_nilai2=?, bobot_komponen=?, IKSK=?, IKUS=?, IKKJ=?, IKS=? WHERE answer_id = ?", 
+    [bridgeId,sistemId,komponenId,subkomponenId,surveyorId, bridgeId,bahanId,kerusakan,interval,luas,luas2,pengurang,koreksi,nilai1,nilai2,bobotKomponen,iksk,ikus,ikkj,iks], function (error, results, fields) {
+        if (error) throw error;
+        return res.send({
+            error: false,
+            data: results,
+            message: 'answer has been updated successfully.'
         });
     });
 });
