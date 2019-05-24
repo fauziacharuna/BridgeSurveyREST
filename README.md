@@ -3,7 +3,7 @@
 
 # Setup Instructions
 
-1. Clone repo 'git clone https://github.com/fauziacharuna/BridgeSurveyREST.git'
+1. Clone repo `git clone https://github.com/fauziacharuna/BridgeSurveyREST.git`
 2. `npm install`
 3. `npm start` / 'nodemon start'
 4. Open browser to (for example):
