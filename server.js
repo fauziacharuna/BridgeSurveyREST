@@ -84,16 +84,43 @@ app.get('/subkomponen', function (req, res) {
 });
 
 app.get('/answer', function (req, res) {
-    mc.query('SELECT answer_id,bridge_location,bridge_name,sistem_name,komponen_name,subKomponen_name,surveyor_name,kerusakan,interval_kerusakan,luasan,luasan2,nilai_pengurang,faktor_koreksi,faktor_nilai1,faktor_nilai2,bobot_komponen,IKSK,IKUS,IKKJ,IKS FROM answer a ,bridge b , sistem s ,komponen k ,subkomponen sk ,surveyor su WHERE a.bridge_id = b.bridge_id AND a.sistem_id = s.sistem_id AND a.komponen_id = k.komponen_id AND a.subKomponen_id = sk.subKomponen_id AND a.surveyor_id = su.surveyor_id', function (error, results, fields) {
+    mc.query('SELECT answer_id,bridge_location,bridge_name,sistem_name,komponen_name,subKomponen_name,surveyor_name,bahan_name,kerusakan,interval_kerusakan,luasan,luasan2,nilai_pengurang,faktor_koreksi,faktor_nilai1,faktor_nilai2,bobot_komponen,IKSK,IKUS,IKKJ,IKS FROM answer a ,bridge b , sistem s ,bahan bh ,komponen k ,subkomponen sk ,surveyor su WHERE a.bahan_id=bh.bahan_id AND a.bridge_id = b.bridge_id AND a.sistem_id = s.sistem_id AND a.komponen_id = k.komponen_id AND a.subKomponen_id = sk.subKomponen_id AND a.surveyor_id = su.surveyor_id', function (error, results, fields) {
         if (error) throw error;
         return res.send({
             allAnswer: results
         });
     });
 });
+
+
+app.get('/engineer', function (req, res) {
+    mc.query('SELECT * from surveyor', function (error, results, fields) {
+        if (error) throw error;
+        return res.send({
+            allEngineer: results
+        });
+    });
+});
+app.get('/surveyorbridge', function (req, res) {
+    mc.query('SELECT surveyor_name, bridge_name as bridge_surveyed, bridge_location  FROM answer a, bridge b, surveyor s WHERE a.surveyor_id=s.surveyor_id AND a.bridge_id=b.bridge_id ', function (error, results, fields) {
+        if (error) throw error;
+        return res.send({
+            allSurveyed: results
+        });
+    });
+});
+app.get('/bridge', function (req, res) {
+    mc.query('SELECT bridge_location, bridge_name, kerusakan FROM answer a ,bridge b WHERE  a.bridge_id = b.bridge_id', function (error, results, fields) {
+        if (error) throw error;
+        return res.send({
+            allBridge: results
+        });
+    });
+});
+// POST METHOD
 app.post('/addanswer', function (req, res) {
 
-    let id = req.body.surveyor_name;
+    let answerId = req.body.answer_id;
     let bridgeName = req.body.bridge_name;
     let bridgeloc = req.body.bridge_location;
     let komponen = req.body.komponen_name;
@@ -154,30 +181,6 @@ app.post('/addanswer', function (req, res) {
     });
 });
 
-app.get('/engineer', function (req, res) {
-    mc.query('SELECT * from surveyor', function (error, results, fields) {
-        if (error) throw error;
-        return res.send({
-            allEngineer: results
-        });
-    });
-});
-app.get('/surveyorbridge', function (req, res) {
-    mc.query('SELECT surveyor_name, bridge_name as bridge_surveyed, bridge_location  FROM answer a, bridge b, surveyor s WHERE a.surveyor_id=s.surveyor_id AND a.bridge_id=b.bridge_id ', function (error, results, fields) {
-        if (error) throw error;
-        return res.send({
-            allEngineer: results
-        });
-    });
-});
-app.get('/bridge', function (req, res) {
-    mc.query('SELECT bridge_location, bridge_name, kerusakan FROM answer a ,bridge b WHERE  a.bridge_id = b.bridge_id', function (error, results, fields) {
-        if (error) throw error;
-        return res.send({
-            allBridge: results
-        });
-    });
-});
 // Add a new todo  
 app.post('/addbridge', function (req, res) {
 
@@ -229,6 +232,8 @@ app.post('/addengineer', function (req, res) {
     });
 });
 
+// PUT METHOD
+
 app.put('/edit/engineer', function (req, res) {
 
     let id = req.body.surveyor_id;
@@ -253,6 +258,8 @@ app.put('/edit/engineer', function (req, res) {
     });
 });
 
+// DELETE METHOD
+
 app.delete('/delete/engineer', function (req, res) {
 
     let id = req.body.surveyor_id;
@@ -269,6 +276,25 @@ app.delete('/delete/engineer', function (req, res) {
             error: false,
             data: results,
             message: 'Surveyor has been updated successfully.'
+        });
+    });
+});
+app.delete('/delete/bridge', function (req, res) {
+
+    let id = req.body.bridge_id;
+
+    if (!id) {
+        return res.status(400).send({
+            error: true,
+            message: 'Please provide id'
+        });
+    }
+    mc.query('DELETE FROM bridge WHERE bridge_id = ?', [id], function (error, results, fields) {
+        if (error) throw error;
+        return res.send({
+            error: false,
+            data: results,
+            message: 'bridge has been updated successfully.'
         });
     });
 });
