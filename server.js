@@ -62,7 +62,7 @@ app.get('/sistem', function (req, res) {
     mc.query('SELECT * FROM sistem', function (error, results, fields) {
         if (error) throw error;
         return res.send({
-            data: results
+            allSistem: results
         });
     });
 });
@@ -70,16 +70,16 @@ app.get('/komponen', function (req, res) {
     mc.query('SELECT komponen_id, komponen_name, sistem_name FROM komponen k, sistem s WHERE k.sistem_id=s.sistem_id', function (error, results, fields) {
         if (error) throw error;
         return res.send({
-            data: results
+            allKomponen: results
         });
     });
 });
 app.get('/subkomponen', function (req, res) {
-    mc.query('SELECT subKomponen_id,komponen_name,subKomponen_name FROM subkomponen s,komponen k where s.komponen_id = k.komponen_id', function (error, results, fields) {
+    mc.query('SELECT subKomponen_id,komponen_name,subKomponen_name,sistem_name FROM subkomponen s,komponen k,sistem st  where s.komponen_id = k.komponen_id AND k.sistem_id=st.sistem_id', function (error, results, fields) {
         if (error) throw error;
         return res.send({
-            data: results
-        });
+            allSubKomponen : results
+        }); 
     });
 });
 
@@ -87,13 +87,13 @@ app.get('/answer', function (req, res) {
     mc.query('SELECT answer_id,bridge_location,bridge_name,sistem_name,komponen_name,subKomponen_name,surveyor_name,kerusakan,interval_kerusakan,luasan,luasan2,nilai_pengurang,faktor_koreksi,faktor_nilai1,faktor_nilai2,bobot_komponen,IKSK,IKUS,IKKJ,IKS FROM answer a ,bridge b , sistem s ,komponen k ,subkomponen sk ,surveyor su WHERE a.bridge_id = b.bridge_id AND a.sistem_id = s.sistem_id AND a.komponen_id = k.komponen_id AND a.subKomponen_id = sk.subKomponen_id AND a.surveyor_id = su.surveyor_id', function (error, results, fields) {
         if (error) throw error;
         return res.send({
-            data: results
+            allAnswer: results
         });
     });
 });
 app.post('/addanswer', function (req, res) {
 
-    let name = req.body.engineer_name;
+    let id = req.body.surveyor_name;
     let bridgeName = req.body.bridge_name;
     let bridgeloc = req.body.bridge_location;
     let komponen = req.body.komponen_name;
@@ -124,25 +124,25 @@ app.post('/addanswer', function (req, res) {
     }
 
     mc.query("INSERT INTO answer SET ? ", {
-        engineer_name: name,
+        surveyor_name: name,
         bridge_name: bridgeName,
         bridge_location: bridgeloc,
-        komponen_name : komponen,
-        sistem_name : sistem,
-        bahan : bhn,
-        kerusakan : rusak,
-        interval_kerusakan : interval,
-        luasan : luas,
-        luas2:luasan2,
-        nilai_pengurang:pengurang,
-        faktor_koreksi : koreksi,
-        faktor_nilai1 : nilai1,
-        faktor_nilai2 : nilai2,
+        komponen_name: komponen,
+        sistem_name: sistem,
+        bahan: bhn,
+        kerusakan: rusak,
+        interval_kerusakan: interval,
+        luasan: luas,
+        luasan2: luas2,
+        nilai_pengurang: pengurang,
+        faktor_koreksi: koreksi,
+        faktor_nilai1: nilai1,
+        faktor_nilai2: nilai2,
         bobot_komponen: bobotKomponen,
-        IKSK : iksk,
-        IKUS : ikus,
-        IKKJ : ikkj,
-        IKS : iks
+        IKSK: iksk,
+        IKUS: ikus,
+        IKKJ: ikkj,
+        IKS: iks
 
     }, function (error, results, fields) {
         if (error) throw error;
@@ -158,11 +158,26 @@ app.get('/engineer', function (req, res) {
     mc.query('SELECT * from surveyor', function (error, results, fields) {
         if (error) throw error;
         return res.send({
-            data: results
+            allEngineer: results
         });
     });
 });
-
+app.get('/surveyorbridge', function (req, res) {
+    mc.query('SELECT surveyor_name, bridge_name as bridge_surveyed, bridge_location  FROM answer a, bridge b, surveyor s WHERE a.surveyor_id=s.surveyor_id AND a.bridge_id=b.bridge_id ', function (error, results, fields) {
+        if (error) throw error;
+        return res.send({
+            allEngineer: results
+        });
+    });
+});
+app.get('/bridge', function (req, res) {
+    mc.query('SELECT bridge_location, bridge_name, kerusakan FROM answer a ,bridge b WHERE  a.bridge_id = b.bridge_id', function (error, results, fields) {
+        if (error) throw error;
+        return res.send({
+            allBridge: results
+        });
+    });
+});
 // Add a new todo  
 app.post('/addbridge', function (req, res) {
 
